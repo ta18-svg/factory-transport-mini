@@ -1,0 +1,40 @@
+# =========================================
+# Webフレームワーク本体
+# =========================================
+fastapi==0.115.0
+# FastAPIを起動するASGIサーバー
+# [standard] を付けると開発に便利な依存関係も入る
+uvicorn[standard]==0.30.6
+# HTMLテンプレートを使うため
+# Jinja2Templates で使用
+jinja2==3.1.4
+# フォーム送信・ファイルアップロードに必要
+# OAuth2PasswordRequestForm や request.form() でも使う
+python-multipart==0.0.9
+
+# =========================================
+# DB関連
+# =========================================
+# PythonでDBを操作するORM
+sqlalchemy==2.0.35
+# MySQLへ接続するためのドライバ
+# 接続URL例: mysql+pymysql://user:pass@db:3306/dbname
+pymysql==1.1.1
+# PyMySQLでMySQL 8系の認証方式に対応するために必要になることがある
+# caching_sha2_password 対応
+cryptography==43.0.1
+
+# =========================================
+# 認証・JWT関連
+# =========================================
+# JWTを作成・検証するライブラリ
+python-jose==3.3.0
+# パスワードをハッシュ化・検証するライブラリ
+# bcrypt方式で使用
+passlib[bcrypt]==1.7.4
+# =========================================
+# 環境変数関連
+# =========================================
+# .env ファイルをPython側で読み込むため
+# 例: MYSQL_HOST, MYSQL_USER, JWT_SECRET_KEY など
+python-dotenv==1.0.1
