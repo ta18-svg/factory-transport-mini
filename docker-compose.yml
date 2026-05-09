@@ -5,7 +5,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app/app
+      # - ./app:/app/app  Windowsの app フォルダだけをコンテナの /app/app に同期
+      - .:/app # Windowsでプロジェクト全体をコンテナの /app に同期
     env_file:
       - .env
     depends_on:

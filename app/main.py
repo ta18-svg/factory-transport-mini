@@ -92,7 +92,12 @@ def on_startup():
     実務では後半PhaseでAlembicに切り替える。
     """
     # SQLAlchemyモデルを元にテーブル作成
-    Base.metadata.create_all(bind=engine)
+    # Base.metadata.create_all(bind=engine)
+    """
+    Phase9以降はAlembicでDB管理するため、
+    create_all() は使わない。
+    """
+    pass
 
 # =========================================================
 # ルートURL
