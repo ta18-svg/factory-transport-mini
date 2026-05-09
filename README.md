@@ -5,6 +5,8 @@
 
 docker compose up -d --build
 
+docker compose restart app
+
 docker compose down
 
 ### コンテナ内のMySQLでテーブル確認

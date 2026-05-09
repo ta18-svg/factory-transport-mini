@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="h4 mb-4">ダッシュボード</h1>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">本日の依頼数</div>
+                <div class="display-6">{{ today_count }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">未対応</div>
+                <div class="display-6">{{ requested_count }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">対応中</div>
+                <div class="display-6">{{ in_progress_count }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">完了</div>
+                <div class="display-6">{{ done_count }}</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h5">このシステムで見える化すること</h2>
+
+        <ul class="mb-0">
+            <li>今日、何件の搬送依頼が発生したか</li>
+            <li>未対応の依頼が残っていないか</li>
+            <li>現在、対応中の搬送が何件あるか</li>
+            <li>完了済みの搬送依頼が何件あるか</li>
+        </ul>
+    </div>
+</div>
+
+{% endblock %}
