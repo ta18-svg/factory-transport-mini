@@ -9,8 +9,11 @@ services:
       - .:/app # Windowsでプロジェクト全体をコンテナの /app に同期
     env_file:
       - .env
+    # depends_on:
+    #   - db
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     # app/main.py の中にある app 変数を起動するためのコマンド
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
   db:
@@ -26,5 +29,23 @@ services:
       - "23306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    # =========================
+    # MySQLヘルスチェック
+    # =========================
+    healthcheck:
+      test: [
+        "CMD",
+        "mysqladmin",
+        "ping",
+        "-h",
+        "localhost",
+        "-uappuser",
+        "-papppass"
+      ]
+
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 volumes:
   mysql_data:
