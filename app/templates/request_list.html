@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h4">搬送依頼一覧</h1>
+
+    {% if current_user.role == "admin" %}
+    <a href="/requests/new" class="btn btn-primary">
+        新規登録
+    </a>
+    {% endif %}
+</div>
+
+<table class="table table-bordered table-hover bg-white shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>部品名</th>
+            <th>数量</th>
+            <th>出発場所</th>
+            <th>届け先</th>
+            <th>優先度</th>
+            <th>ステータス</th>
+            <th>担当者</th>
+            <th>メモ</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for req in requests %}
+        <tr>
+            <td>{{ req.id }}</td>
+            <td>{{ req.part_name }}</td>
+            <td>{{ req.quantity }}</td>
+            <td>{{ req.from_location.name }}</td>
+            <td>{{ req.to_location.name }}</td>
+            <td>{{ req.priority }}</td>
+            <td>
+                {% if req.status == "REQUESTED" %}
+                    <span class="badge bg-secondary">REQUESTED</span>
+                {% elif req.status == "IN_PROGRESS" %}
+                    <span class="badge bg-warning text-dark">IN_PROGRESS</span>
+                {% elif req.status == "DONE" %}
+                    <span class="badge bg-success">DONE</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if req.assigned_user %}
+                    {{ req.assigned_user.username }}
+                {% else %}
+                    未割当
+                {% endif %}
+            </td>
+            <td>{{ req.memo or "" }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9" class="text-center text-muted">
+                搬送依頼はまだありません。
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
