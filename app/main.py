@@ -288,25 +288,43 @@ def dashboard(
 @app.get("/requests", response_class=HTMLResponse)
 def request_list(
     request: Request,
+    status: str | None = None,
     db: Session = Depends(get_db),
 ):
+    """
+    搬送依頼一覧画面。
+
+    status クエリパラメータで絞り込み可能。
+
+    例:
+    /requests
+    /requests?status=REQUESTED
+    /requests?status=IN_PROGRESS
+    /requests?status=DONE
+    """
+
     current_user = get_current_user_from_cookie(request, db)
 
-    requests = (
+    allowed_statuses = ["REQUESTED", "IN_PROGRESS", "DONE"]
+
+    query = (
         db.query(models.TransportRequest)
         .options(
             joinedload(models.TransportRequest.from_location),
             joinedload(models.TransportRequest.to_location),
             joinedload(models.TransportRequest.assigned_user),
         )
-        .order_by(models.TransportRequest.id.desc())
-        .all()
     )
 
-    workers = (
-        db.query(models.User)
-        .filter(models.User.role == "worker")
-        .order_by(models.User.id)
+    # status が指定されていて、許可された値なら絞り込み
+    if status in allowed_statuses:
+        query = query.filter(models.TransportRequest.status == status)
+    else:
+        status = None
+
+    requests = (
+        query
+        .order_by(models.TransportRequest.updated_at.desc())
         .all()
     )
 
@@ -316,7 +334,7 @@ def request_list(
             "request": request,
             "current_user": current_user,
             "requests": requests,
-            "workers": workers,
+            "selected_status": status,
         },
     )
 
