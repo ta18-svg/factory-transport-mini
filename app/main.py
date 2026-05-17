@@ -381,21 +381,56 @@ def create_request(
     db.commit()
 
     return RedirectResponse(url="/requests", status_code=302)
-@app.post("/requests/{request_id}/status")
-def update_status(
+
+@app.get("/requests/{request_id}/edit", response_class=HTMLResponse)
+def edit_request_page(
+    request_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    current_user = get_current_user_from_cookie(request, db)
+
+    transport_request = (
+        db.query(models.TransportRequest)
+        .options(
+            joinedload(models.TransportRequest.from_location),
+            joinedload(models.TransportRequest.to_location),
+            joinedload(models.TransportRequest.assigned_user),
+        )
+        .filter(models.TransportRequest.id == request_id)
+        .first()
+    )
+
+    if not transport_request:
+        return RedirectResponse(url="/requests", status_code=302)
+
+    workers = (
+        db.query(models.User)
+        .filter(models.User.role == "worker")
+        .order_by(models.User.id)
+        .all()
+    )
+
+    return templates.TemplateResponse(
+        "request_edit.html",
+        {
+            "request": request,
+            "current_user": current_user,
+            "transport_request": transport_request,
+            "workers": workers,
+        },
+    )
+
+
+@app.post("/requests/{request_id}/edit")
+def update_request(
     request_id: int,
     request: Request,
     status: str = Form(...),
+    assigned_user_id: str = Form(""),
+    memo: str = Form(""),
     db: Session = Depends(get_db),
 ):
-    """
-    ステータス更新。
-
-    管理者・作業者の両方が更新可能。
-    実務では REQUESTED → IN_PROGRESS → DONE の順序制御を
-    より厳密に入れることもできる。
-    """
-
     current_user = get_current_user_from_cookie(request, db)
 
     allowed_statuses = ["REQUESTED", "IN_PROGRESS", "DONE"]
@@ -412,43 +447,22 @@ def update_status(
     if not transport_request:
         return RedirectResponse(url="/requests", status_code=302)
 
+    # 管理者・作業者どちらもステータス更新可能
     transport_request.status = status
-    db.commit()
 
-    return RedirectResponse(url="/requests", status_code=302)
+    # メモも更新可能
+    transport_request.memo = memo
 
-@app.post("/requests/{request_id}/assign")
-def update_assigned_user(
-    request_id: int,
-    request: Request,
-    assigned_user_id: str = Form(""),
-    db: Session = Depends(get_db),
-):
-    """
-    担当者変更。
-
-    管理者のみ実行可能。
-    """
-
-    current_user = get_current_user_from_cookie(request, db)
-    require_admin(current_user)
-
-    transport_request = (
-        db.query(models.TransportRequest)
-        .filter(models.TransportRequest.id == request_id)
-        .first()
-    )
-
-    if not transport_request:
-        return RedirectResponse(url="/requests", status_code=302)
-
-    transport_request.assigned_user_id = (
-        int(assigned_user_id) if assigned_user_id else None
-    )
+    # 担当者変更は管理者のみ
+    if current_user.role == "admin":
+        transport_request.assigned_user_id = (
+            int(assigned_user_id) if assigned_user_id else None
+        )
 
     db.commit()
 
     return RedirectResponse(url="/requests", status_code=302)
+
 # =========================================================
 # ログアウト処理
 # =========================================================
