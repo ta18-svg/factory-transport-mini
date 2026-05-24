@@ -56,5 +56,3 @@ docker-compose.override.yml
 # Excel temporary files
 ~$*.xlsx
 
-# Documents
-docs/
