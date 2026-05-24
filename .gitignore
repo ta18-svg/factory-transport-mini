@@ -48,3 +48,13 @@ docker-compose.override.yml
 # その他
 # =========================
 *.sqlite3
+
+# Excel files
+*.xlsx
+*.xls
+
+# Excel temporary files
+~$*.xlsx
+
+# Documents
+docs/
