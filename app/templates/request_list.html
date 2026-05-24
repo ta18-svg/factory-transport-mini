@@ -35,7 +35,58 @@
     </a>
 
 </div>
+<!-- ========================= -->
+<!-- CSV出力ボタン -->
+<!-- ========================= -->
+ 
+<div class="mb-3">
+    {#
+    selected_status が存在するか確認。
 
+    selected_status は
+    FastAPI側から渡される変数。
+
+    例: /requests?status=DONE の場合、selected_status = "DONE" になる。
+
+    一方、/requests の場合は None。
+    #}
+    {% if selected_status %}
+        <a
+            {#
+            href → リンク先URL
+            ?status={{ selected_status }} により、
+            現在のフィルタ条件を維持する。
+            実際のURL例: /requests/export/csv?status=REQUESTED
+            #}
+            href="/requests/export/csv?status={{ selected_status }}"
+            {#
+            Bootstrapボタン装飾。
+            btn → ボタン化
+            btn-outline-success → 緑枠ボタン
+            #}
+            class="btn btn-outline-success"
+        >
+            表示中の一覧をCSV出力
+        </a>
+    {% else %}
+        {#
+        selected_status が None の場合。
+        つまりフィルタなし。ALL表示状態。
+        全件CSV出力する。
+        #}
+        <a
+            {#
+            status パラメータなし。
+            つまり: /requests/export/csv
+            → 全件取得
+            #}
+            href="/requests/export/csv"
+            class="btn btn-outline-success"
+        >
+            全件CSV出力
+        </a>
+    {% endif %}
+</div>
 <table class="table table-bordered table-hover bg-white shadow-sm align-middle">
     <thead class="table-dark">
         <tr>
