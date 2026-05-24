@@ -97,6 +97,7 @@
             <th>届け先</th>
             <th>優先度</th>
             <th>ステータス</th>
+            <th>ステータス更新日時</th>
             <th>担当者</th>
             <th>メモ</th>
             <th>操作</th>
@@ -122,7 +123,9 @@
                     <span class="badge bg-success">DONE</span>
                 {% endif %}
             </td>
-
+            <td>
+                {{ req.updated_at.strftime("%Y-%m-%d %H:%M") }}
+            </td>
             <td>
                 {% if req.assigned_user %}
                     {{ req.assigned_user.username }}
@@ -142,7 +145,7 @@
         </tr>
         {% else %}
         <tr>
-            <td colspan="10" class="text-center text-muted">
+            <td colspan="11" class="text-center text-muted">
                 搬送依頼はありません。
             </td>
         </tr>
